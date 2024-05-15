@@ -10,7 +10,7 @@ public class ProducerExample {
 
     public static void main(final String[] args) throws IOException {
         // Load producer configuration settings from a local file
-        final Properties props = loadConfig("src/main/resources/application.properties");
+        final Properties props = loadConfig();
         final String topic = "purchases";
 
         String[] users = {"eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther"};
@@ -22,13 +22,24 @@ public class ProducerExample {
                 String user = users[rnd.nextInt(users.length)];
                 String item = items[rnd.nextInt(items.length)];
 
+                // send with key
                 producer.send(
                         new ProducerRecord<>(topic, user, item),
                         (event, ex) -> {
                             if (ex != null)
-                                ex.printStackTrace();
+                                handleException(ex);
                             else
                                 System.out.printf("Produced event to topic %s: key = %-10s value = %s%n", topic, user, item);
+                        });
+
+                // send without key
+                producer.send(
+                        new ProducerRecord<>(topic, item),
+                        (event, ex) -> {
+                            if (ex != null)
+                                handleException(ex);
+                            else
+                                System.out.printf("Produced event to topic %s: value = %s%n", topic, item);
                         });
             }
             System.out.printf("%s events were produced to topic %s%n", numMessages, topic);
@@ -37,15 +48,21 @@ public class ProducerExample {
     }
 
     // We'll reuse this function to load properties from the Consumer as well
-    public static Properties loadConfig(final String configFile) throws IOException {
-        if (!Files.exists(Paths.get(configFile))) {
-            throw new IOException(configFile + " not found.");
+    private static Properties loadConfig() throws IOException {
+        if (!Files.exists(Paths.get("src/main/resources/application.properties"))) {
+            throw new IOException("src/main/resources/application.properties" + " not found.");
         }
         final Properties cfg = new Properties();
-        try (InputStream inputStream = new FileInputStream(configFile)) {
+        try (InputStream inputStream = new FileInputStream("src/main/resources/application.properties")) {
             cfg.load(inputStream);
         }
         return cfg;
     }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    private static void handleException(final Throwable ex) {
+        ex.printStackTrace();
+    }
+
 }
 
