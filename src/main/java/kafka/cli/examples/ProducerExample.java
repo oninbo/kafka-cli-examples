@@ -28,7 +28,7 @@ public class ProducerExample {
                 String user = users[rnd.nextInt(users.length)];
                 String item = items[rnd.nextInt(items.length)];
 
-                // send with key
+                // send with key + handle broker reply
                 producer.send(
                         new ProducerRecord<>(topic, user, item),
                         (event, ex) -> {
@@ -47,8 +47,10 @@ public class ProducerExample {
                             else
                                 System.out.printf("Produced event to topic %s: value = %s%n", topic, item);
                         });
+
+                // fire and forget
+                producer.send(new ProducerRecord<>(topic, item));
             }
-            System.out.printf("%s events were produced to topic %s%n", numMessages, topic);
         }
 
         // send with custom partitioner
