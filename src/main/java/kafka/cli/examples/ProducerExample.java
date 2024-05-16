@@ -1,10 +1,16 @@
 package kafka.cli.examples;
 
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.util.Random;
 
 public class ProducerExample {
 
@@ -45,6 +51,26 @@ public class ProducerExample {
             System.out.printf("%s events were produced to topic %s%n", numMessages, topic);
         }
 
+        // send with custom partitioner
+        props.setProperty("partitioner.class", PartitionerExample.class.getName());
+        try (final Producer<String, String> producer = new KafkaProducer<>(props)) {
+            final Random rnd = new Random();
+            final long numMessages = 10;
+            for (long i = 0L; i < numMessages; i++) {
+                String user = users[rnd.nextInt(users.length)];
+                String item = items[rnd.nextInt(items.length)];
+
+                producer.send(
+                        new ProducerRecord<>(topic, user, item),
+                        (event, ex) -> {
+                            if (ex != null)
+                                handleException(ex);
+                            else
+                                System.out.printf("Produced event to topic %s: key = %-10s value = %s%n", topic, user, item);
+                        });
+            }
+            System.out.printf("%s events were produced to topic %s%n", numMessages, topic);
+        }
     }
 
     // We'll reuse this function to load properties from the Consumer as well
