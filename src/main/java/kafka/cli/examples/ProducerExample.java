@@ -76,7 +76,7 @@ public class ProducerExample {
     }
 
     // We'll reuse this function to load properties from the Consumer as well
-    private static Properties loadConfig() throws IOException {
+    public static Properties loadConfig() throws IOException {
         if (!Files.exists(Paths.get("src/main/resources/application.properties"))) {
             throw new IOException("src/main/resources/application.properties" + " not found.");
         }

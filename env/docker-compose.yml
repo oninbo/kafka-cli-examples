@@ -20,6 +20,7 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29091
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       ZOOKEEPER: zookeeper:2181
 
   init-kafka:
@@ -33,7 +34,7 @@ services:
       kafka-topics --bootstrap-server kafka:9092 --list
       
       echo -e 'Creating kafka topics'
-      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic messages --partitions 1
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic purchases --partitions 2
       
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka:9092 --list
