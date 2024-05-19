@@ -26,11 +26,11 @@ public class ProducerExample {
             final long numMessages = 10;
             for (long i = 0L; i < numMessages; i++) {
                 String user = users[rnd.nextInt(users.length)];
-                String item = items[rnd.nextInt(items.length)];
+                String item = items[rnd.nextInt(items.length)] + i;
 
                 // send with key + handle broker reply
                 producer.send(
-                        new ProducerRecord<>(topic, user, item),
+                        new ProducerRecord<>(topic, user, item + 0),
                         (event, ex) -> {
                             if (ex != null)
                                 handleException(ex);
@@ -40,7 +40,7 @@ public class ProducerExample {
 
                 // send without key
                 producer.send(
-                        new ProducerRecord<>(topic, item),
+                        new ProducerRecord<>(topic, item + 1),
                         (event, ex) -> {
                             if (ex != null)
                                 handleException(ex);
@@ -49,7 +49,7 @@ public class ProducerExample {
                         });
 
                 // fire and forget
-                producer.send(new ProducerRecord<>(topic, item));
+                producer.send(new ProducerRecord<>(topic, item + 2));
             }
         }
 
@@ -60,7 +60,7 @@ public class ProducerExample {
             final long numMessages = 10;
             for (long i = 0L; i < numMessages; i++) {
                 String user = users[rnd.nextInt(users.length)];
-                String item = items[rnd.nextInt(items.length)];
+                String item = items[rnd.nextInt(items.length)] + (i + 10);
 
                 producer.send(
                         new ProducerRecord<>(topic, user, item),
