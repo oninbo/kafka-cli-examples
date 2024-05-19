@@ -23,6 +23,9 @@ public class ConsumerExample {
             consumer.subscribe(List.of(topic));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+                if (records.count() > 0) {
+                    System.out.printf("Consumed %d records%n", records.count());
+                }
                 for (ConsumerRecord<String, String> record : records) {
                     String key = record.key();
                     String value = record.value();

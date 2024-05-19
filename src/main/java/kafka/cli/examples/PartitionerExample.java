@@ -17,6 +17,11 @@ public class PartitionerExample implements Partitioner {
             return 0;
         } else {
             int numberOfPartitions = availablePartitions.size();
+
+            if (key instanceof String stringKey) {
+                return stringKey.length() % numberOfPartitions;
+            }
+
             return BuiltInPartitioner.partitionForKey(keyBytes, numberOfPartitions);
         }
     }
