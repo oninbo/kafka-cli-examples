@@ -47,6 +47,7 @@ public class KafkaAtMostOnceExample {
         consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "my-group");
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
         // Создаем консьюмера Kafka
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps);
@@ -59,6 +60,7 @@ public class KafkaAtMostOnceExample {
             ConsumerRecords<String, String> records;
             for (int i = 0; i < MESSAGE_COUNT; i += records.count()) {
                 records = consumer.poll(Duration.ofMillis(100));
+                consumer.commitSync();
                 for (ConsumerRecord<String, String> record : records) {
                     System.out.println("Получено сообщение: " + record.value());
                 }
